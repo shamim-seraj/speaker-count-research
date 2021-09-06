@@ -1,0 +1,9 @@
+load = 1
+[preprocess]
+kernel_size =3
+filters = 32
+window = "hamming_asymmetric"
+batch_size = 16
+lr = 0.0001
+beta_1 = 0.9
+beta_2 = 0.999
