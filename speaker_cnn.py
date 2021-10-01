@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from keras import callbacks
+from tensorflow.keras import callbacks
 from tensorflow.keras import activations
 from tensorflow.keras import layers, models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def cnn_model():
     model = models.Sequential()
-    model.add(layers.Conv2D(16, (3, 3), input_shape=(50, 100, 3)))
+    model.add(layers.Conv2D(16, (3, 3), input_shape=(100, 50, 3)))
     model.add(layers.BatchNormalization())
     model.add(layers.Activation(activations.relu))
     model.add(layers.MaxPooling2D((2, 2)))
@@ -44,10 +44,10 @@ def cnn_model():
 
 if __name__ == '__main__':
 
-    #device_name = tf.test.gpu_device_name()
-    #if device_name != '/device:GPU:0':
-    #    raise SystemError('GPU device not found')
-    #print('Found GPU at: {}'.format(device_name))
+    device_name = tf.test.gpu_device_name()
+    if device_name != '/device:GPU:0':
+        raise SystemError('GPU device not found')
+    print('Found GPU at: {}'.format(device_name))
     from tensorflow.python.client import device_lib
     device_lib.list_local_devices()
     print(tf.__version__)
@@ -64,8 +64,8 @@ if __name__ == '__main__':
     )
     train_generator = train_data_generator.flow_from_directory(
         train_path,
-        target_size=(50, 100),
-        batch_size=50,
+        target_size=(100, 50),
+        batch_size=10,
         color_mode='rgb',
         class_mode='categorical'
     )
@@ -76,8 +76,8 @@ if __name__ == '__main__':
     )
     test_generator = test_data_generator.flow_from_directory(
         test_path,
-        target_size=(50, 100),
-        batch_size=50,
+        target_size=(100, 50),
+        batch_size=10,
         color_mode='rgb',
         class_mode='categorical',
         shuffle=True
@@ -93,18 +93,17 @@ if __name__ == '__main__':
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     early_stopping = callbacks.EarlyStopping(
         monitor="val_loss",
-        min_delta=0.05,
         patience=10,
         verbose=1,
-        mode="min"
+        mode="auto"
     )
-
+    
     history = model.fit(
         train_generator,
-        steps_per_epoch=100,
+        steps_per_epoch=6000,
         epochs=100,
         validation_data=test_generator,
-        validation_steps=10,
+        validation_steps=1500,
         callbacks=[early_stopping]
     )
 
